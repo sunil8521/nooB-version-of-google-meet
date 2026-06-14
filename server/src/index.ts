@@ -64,7 +64,7 @@ io.on("connection", (socket) => {
 
             socket.emit("room-users", existingUsers)
         }
-x
+
         // Broadcast new user to others in the room
         socket.to(roomId).emit("user-joined", user)
 
