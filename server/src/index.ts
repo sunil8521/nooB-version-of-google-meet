@@ -4,7 +4,7 @@ import { Server } from "socket.io"
 
 const app = express()
 const server = createServer(app)
-
+const PORT=process.env.PORT??3001
 const io = new Server(server, {
     cors: {
         origin: ["http://localhost:3000","https://s362ttbl-3000.inc1.devtunnels.ms"],
@@ -25,7 +25,6 @@ interface RoomUser {
 // Track users by room
 const rooms = new Map<string, Map<string, RoomUser>>()
 
-//romms= roomID => {socketID => {socketID,name, initials, isMuted, isVideoOff}}
 
 /* ── Helpers ── */
 const getInitials = (name: string) =>
@@ -65,7 +64,7 @@ io.on("connection", (socket) => {
 
             socket.emit("room-users", existingUsers)
         }
-
+x
         // Broadcast new user to others in the room
         socket.to(roomId).emit("user-joined", user)
 

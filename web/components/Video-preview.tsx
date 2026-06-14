@@ -55,7 +55,7 @@ const VideoPreview = () => {
         }
     }, [localStream, isVideoOff]);
 
-   
+
 
     const toggleMic = () => {
         if (!localStream || localStream.getAudioTracks().length === 0) {

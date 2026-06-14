@@ -89,6 +89,9 @@ const CHUNK_SIZE = 16384; // 16KB chunks for file transfer
 const peerConnections = new Map<string, RTCPeerConnection>();
 const dataChannels = new Map<string, RTCDataChannel>();
 
+// Saved camera track for reverting after screen share
+let savedCameraTrack: MediaStreamTrack | null = null;
+
 // Per-peer file receive state
 const fileReceiveState = new Map<string, {
     chunks: ArrayBuffer[];
@@ -395,7 +398,109 @@ export const useMeetingStore = create<MeetingState>((set, get) => ({
     },
 
     toggleChat: () => set((s) => ({ isChatOpen: !s.isChatOpen })),
-    toggleScreenShare: () => set((s) => ({ isScreenSharing: !s.isScreenSharing })),
+
+    /* Screen share — getDisplayMedia + replace video track in all peers */
+    toggleScreenShare: async () => {
+        const { isScreenSharing, localStream, selfId, roomId } = get();
+
+        if (isScreenSharing) {
+            // ── Stop screen share → revert to camera ──
+            const cameraTrack = savedCameraTrack;
+            if (cameraTrack && localStream) {
+                // Replace screen track with camera track in all peer connections
+                peerConnections.forEach((pc) => {
+                    const videoSender = pc.getSenders().find((s) => s.track?.kind === "video");
+                    if (videoSender) {
+                        videoSender.replaceTrack(cameraTrack);
+                    }
+                });
+
+                // Stop the screen track
+                const screenTrack = localStream.getVideoTracks()[0];
+                if (screenTrack && screenTrack !== cameraTrack) {
+                    screenTrack.stop();
+                }
+
+                // Replace the video track in localStream
+                localStream.getVideoTracks().forEach((t) => localStream.removeTrack(t));
+                localStream.addTrack(cameraTrack);
+
+                // Update self participant stream with new reference
+                set((s) => {
+                    const newStream = new MediaStream(localStream.getTracks());
+                    return {
+                        isScreenSharing: false,
+                        participants: selfId ? {
+                            ...s.participants,
+                            [selfId]: { ...s.participants[selfId], stream: newStream },
+                        } : s.participants,
+                    };
+                });
+            } else {
+                set({ isScreenSharing: false });
+            }
+            savedCameraTrack = null;
+
+            // Notify others
+            const socket = getSocket();
+            if (socket.connected) {
+                socket.emit("toggle-video", { roomId, isVideoOff: get().isVideoOff });
+            }
+            return;
+        }
+
+        // ── Start screen share ──
+        try {
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+                audio: false,
+            });
+
+            const screenTrack = screenStream.getVideoTracks()[0];
+            if (!screenTrack) return;
+
+            // Save the current camera track so we can revert
+            if (localStream) {
+                savedCameraTrack = localStream.getVideoTracks()[0] || null;
+            }
+
+            // Replace camera track with screen track in all peer connections
+            peerConnections.forEach((pc) => {
+                const videoSender = pc.getSenders().find((s) => s.track?.kind === "video");
+                if (videoSender) {
+                    videoSender.replaceTrack(screenTrack);
+                }
+            });
+
+            // Replace the video track in localStream
+            if (localStream) {
+                localStream.getVideoTracks().forEach((t) => localStream.removeTrack(t));
+                localStream.addTrack(screenTrack);
+            }
+
+            // Update self participant stream with new reference
+            set((s) => {
+                const newStream = localStream ? new MediaStream(localStream.getTracks()) : null;
+                return {
+                    isScreenSharing: true,
+                    participants: selfId ? {
+                        ...s.participants,
+                        [selfId]: { ...s.participants[selfId], stream: newStream },
+                    } : s.participants,
+                };
+            });
+
+            // Handle browser "Stop sharing" button
+            screenTrack.onended = () => {
+                get().toggleScreenShare(); // Revert
+            };
+
+            toast.success("Screen sharing started");
+        } catch (err) {
+            // User cancelled the screen share picker
+            console.log("Screen share cancelled:", err);
+        }
+    },
 
     /* Send chat message via socket */
     sendMessage: (text) => {

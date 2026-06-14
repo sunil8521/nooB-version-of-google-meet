@@ -35,14 +35,14 @@ export function Header() {
                     MeetMe
                 </span>
             </div>
-            <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground hidden md:block">
+            <div className="flex flex-col items-end sm:flex-row sm:items-center sm:gap-2">
+                <span className="text-xs sm:text-sm text-muted-foreground">
                     {currentDate}
                 </span>
-                <span className="text-sm text-muted-foreground hidden md:block">
+                <span className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
                     •
                 </span>
-                <span className="text-sm text-muted-foreground hidden md:block">
+                <span className="text-xs sm:text-sm text-muted-foreground">
                     {currentTime}
                 </span>
             </div>

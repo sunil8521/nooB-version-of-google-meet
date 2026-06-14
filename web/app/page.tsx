@@ -41,7 +41,7 @@ export default function HomePage() {
       const code = meetingCode.replace(/[^a-zA-Z0-9-]/g, "");
       router.push(`/lobby/${code}`);
     }
-  }; //TODO: here we have handle we that room is valid or not
+  }; 
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,18 +51,22 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto px-4 py-12 md:py-24">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left side - Text and actions */}
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-8 animate-fade-in text-center md:text-left flex flex-col items-center md:items-start">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-foreground leading-tight">
                 Video calls and meetings for everyone
               </h1>
-              <p className="text-lg text-muted-foreground max-w-md">
-                Connect, collaborate, and celebrate from anywhere with MeetClone
+              <p className="text-lg text-muted-foreground max-w-md mx-auto md:mx-0">
+                Connect, collaborate, and celebrate from anywhere with MeetMe
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <DropdownMenu>
+            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md mx-auto md:mx-0">
+               <Button     onClick={handleNewMeeting} size="lg" className="gap-2 font-medium w-full sm:w-auto">
+                    <Video className="w-5 h-5" />
+                    New meeting
+                  </Button>
+              {/* <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button size="lg" className="gap-2 font-medium">
                     <Video className="w-5 h-5" />
@@ -82,7 +86,7 @@ export default function HomePage() {
                       </p>
                     </div>
                   </DropdownMenuItem>
-                  {/* <DropdownMenuItem className="gap-3 py-3">
+                  <DropdownMenuItem className="gap-3 py-3">
                     <Calendar className="w-4 h-4" />
                     <div>
                       <p className="font-medium">Schedule in calendar</p>
@@ -90,11 +94,11 @@ export default function HomePage() {
                         Plan ahead
                       </p>
                     </div>
-                  </DropdownMenuItem> */}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenu> */}
 
-              <div className="flex gap-2 flex-1">
+              <div className="flex gap-2 flex-1 w-full">
                 <div className="relative flex-1">
                   <Keyboard className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -104,7 +108,7 @@ export default function HomePage() {
                       e.key === "Enter" && handleJoinMeeting()
                     }
                     placeholder="Enter a code or link"
-                    className="pl-10 h-11"
+                    className="pl-10 h-11 w-full text-sm md:text-base"
                   />
                 </div>
                 <Button
@@ -112,30 +116,23 @@ export default function HomePage() {
                   size="lg"
                   onClick={handleJoinMeeting}
                   disabled={!meetingCode.trim()}
-                  className="font-medium text-primary hover:text-primary hover:bg-primary/5"
+                  className="font-medium text-primary hover:text-primary hover:bg-primary/5 px-4"
                 >
                   Join
                 </Button>
               </div>
             </div>
 
-            <div className="border-t border-border pt-6">
-              <p className="text-sm text-muted-foreground">
-                <a href="#" className="text-primary hover:underline">
-                  Learn more
-                </a>{" "}
-                about MeetClone
-              </p>
-            </div>
+          
           </div>
 
           {/* Right side - Illustration */}
-          <div className="hidden md:flex items-center justify-center animate-slide-up">
+          <div className="flex items-center justify-center animate-slide-up mt-8 md:mt-0">
             <div className="relative">
               {/* Main illustration container */}
-              <div className="w-80 h-80 lg:w-96 lg:h-96 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-full flex items-center justify-center">
+              <div className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-full flex items-center justify-center mx-auto">
 
-                <Image src="/videocall.png" alt="Illustration" width={400} height={400} />
+                <Image src="/videocall.png" alt="Illustration" width={400} height={400} className="w-48 h-48 md:w-full md:h-full object-contain" />
               </div>
 
               {/* Floating badges */}

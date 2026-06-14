@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { MicOff } from "lucide-react"
+import { MicOff } from "lucide-react";
+
 interface VideoTileProps {
     name: string;
     initials: string;
@@ -21,19 +22,18 @@ export function VideoTile({
     isLocal,
 }: VideoTileProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
-const showVideo = stream && !isVideoOff && stream.getVideoTracks().length > 0;
-    // Attach stream once
+    const showVideo = stream && !isVideoOff && stream.getVideoTracks().length > 0;
+
     useEffect(() => {
         if (videoRef.current && stream) {
             videoRef.current.srcObject = stream;
-            videoRef.current.play().catch(() => { });
+            videoRef.current.play().catch(() => {});
         }
     }, [stream]);
 
     return (
-        <div className="relative w-full h-full min-h-0 rounded-lg overflow-hidden bg-video-bg">
-
-            {/* Keep video mounted always */}
+        <div className="relative w-full h-full min-h-0 rounded-md md:rounded-lg overflow-hidden bg-video-bg">
+            {/* Video element — always mounted */}
             <video
                 ref={videoRef}
                 autoPlay
@@ -49,8 +49,8 @@ const showVideo = stream && !isVideoOff && stream.getVideoTracks().length > 0;
             {/* Avatar fallback */}
             {!showVideo && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/80 flex items-center justify-center">
-                        <span className="text-xl md:text-2xl font-semibold text-white">
+                    <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-primary/80 flex items-center justify-center">
+                        <span className="text-base md:text-2xl font-semibold text-white">
                             {initials}
                         </span>
                     </div>
@@ -58,12 +58,12 @@ const showVideo = stream && !isVideoOff && stream.getVideoTracks().length > 0;
             )}
 
             {/* Name tag */}
-            <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm rounded-md px-2 py-0.5">
-                <span className="text-white text-xs font-medium truncate max-w-[120px]">
+            <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 flex items-center gap-1 md:gap-1.5 bg-black/60 backdrop-blur-sm rounded-md px-1.5 md:px-2 py-0.5">
+                <span className="text-white text-[10px] md:text-xs font-medium truncate max-w-[80px] md:max-w-[120px]">
                     {isLocal ? `${name} (YOU)` : name}
                 </span>
                 {isMuted && (
-                    <MicOff size={14} color="#ee5858ff" />
+                    <MicOff className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0" color="#ee5858ff" />
                 )}
             </div>
         </div>
