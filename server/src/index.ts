@@ -13,7 +13,7 @@ const CLIENT_URL = process.env.CLIENT_URL!
 
 // Enable CORS for Express API routes (like /api/room/:roomId)
 app.use(cors({
-    origin: [CLIENT_URL, "http://localhost:3000"],
+    origin: [CLIENT_URL],
     credentials: true,
 }))
 
