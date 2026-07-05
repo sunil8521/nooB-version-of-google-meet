@@ -145,9 +145,11 @@ const VideoPreview = () => {
                         </span>
                     )}
                     {localStream && !isMuted && (
-                        <div className="bg-foreground/10 px-2 py-1 rounded-full flex items-center h-[26px]">
-                            <MicVisualizer stream={localStream} isMuted={isMuted} />
-                        </div>
+                        <MicVisualizer 
+                            stream={localStream} 
+                            isMuted={isMuted} 
+                            variant={isVideoOff ? "light-bg" : "dark-bg"} 
+                        />
                     )}
                 </div>
             </div>

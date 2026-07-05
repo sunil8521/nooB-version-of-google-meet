@@ -66,7 +66,7 @@ export function VideoTile({
                 {isMuted ? (
                     <MicOff className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0" color="#ee5858ff" />
                 ) : (
-                    <MicVisualizer stream={stream} isMuted={false} className="w-3 h-3 md:w-3.5 md:h-3.5 scale-75 origin-left" />
+                    <MicVisualizer stream={stream} isMuted={false} />
                 )}
             </div>
         </div>

@@ -43,10 +43,14 @@ export function useMicVolume(stream: MediaStream | null, enabled: boolean = true
                 const average = sum / dataArray.length;
                 
                 // Map the average (0-255) to a volume percentage (0-100)
-                const percentage = Math.min(100, Math.max(0, (average / 255) * 100));
+                let percentage = (average / 255) * 100;
                 
-                // Add a small multiplier to make it more visually responsive to normal speech
-                setVolume(Math.min(100, percentage * 2.5));
+                // Use a square root curve to make small sounds MUCH more visible
+                // A quiet sound of 4% becomes sqrt(0.04) = 20%
+                percentage = Math.pow(percentage / 100, 0.5) * 100;
+                
+                // Add a small multiplier to fill the bars easier during normal speech
+                setVolume(Math.min(100, percentage * 1.5));
 
                 animationFrameId = requestAnimationFrame(updateVolume);
             };
