@@ -4,13 +4,21 @@ import express from "express"
 import { createServer } from "http"
 import { Server } from "socket.io"
 
+import cors from "cors"
+
 const app = express()
 const server = createServer(app)
 const PORT=process.env.PORT??3001
 const CLIENT_URL = process.env.CLIENT_URL!
 
+// Enable CORS for Express API routes (like /api/room/:roomId)
+app.use(cors({
+    origin: [CLIENT_URL, "http://localhost:3000"],
+    credentials: true,
+}))
+
 const io = new Server(server, {
-    cors: {
+    cors: { 
         origin: [CLIENT_URL],
         methods: ["GET", "POST"],
         credentials: true,
