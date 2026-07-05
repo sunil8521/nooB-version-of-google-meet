@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { useMeetingStore } from "@/store/use-meeting-store";
-const SOCKET_URL = "http://localhost:3001";
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 
 let socket: Socket | null = null;
 

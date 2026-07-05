@@ -33,13 +33,13 @@ export default function HomePage() {
 
   const handleNewMeeting = () => {
     const roomId = generateRoomId();
-    router.push(`/lobby/${roomId}`);
+    router.push(`/${roomId}?create=true`);
   };
 
   const handleJoinMeeting = () => {
     if (meetingCode.trim()) {
       const code = meetingCode.replace(/[^a-zA-Z0-9-]/g, "");
-      router.push(`/lobby/${code}`);
+      router.push(`/${code}`);
     }
   }; 
 

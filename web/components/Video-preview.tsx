@@ -1,5 +1,6 @@
 "use client"
 import { Mic, MicOff, Video, VideoOff, User } from "lucide-react";
+import { MicVisualizer } from "@/components/mic-visualizer";
 import { useMeetingStore } from "@/store/use-meeting-store";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -136,14 +137,19 @@ const VideoPreview = () => {
                     </button>
                 </div>
 
-                {/* Camera off badge */}
-                {isVideoOff && (
-                    <div className="absolute top-4 left-4">
+                {/* Mic Visualizer / Camera Badge */}
+                <div className="absolute top-4 left-4 flex items-center gap-2">
+                    {isVideoOff && (
                         <span className="text-xs bg-foreground/10 text-muted-foreground px-2.5 py-1 rounded-full">
                             Camera is off
                         </span>
-                    </div>
-                )}
+                    )}
+                    {localStream && !isMuted && (
+                        <div className="bg-foreground/10 px-2 py-1 rounded-full flex items-center h-[26px]">
+                            <MicVisualizer stream={localStream} isMuted={isMuted} />
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     )

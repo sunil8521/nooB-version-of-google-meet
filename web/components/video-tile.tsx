@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { MicOff } from "lucide-react";
+import { MicVisualizer } from "@/components/mic-visualizer";
 
 interface VideoTileProps {
     name: string;
@@ -62,8 +63,10 @@ export function VideoTile({
                 <span className="text-white text-[10px] md:text-xs font-medium truncate max-w-[80px] md:max-w-[120px]">
                     {isLocal ? `${name} (YOU)` : name}
                 </span>
-                {isMuted && (
+                {isMuted ? (
                     <MicOff className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0" color="#ee5858ff" />
+                ) : (
+                    <MicVisualizer stream={stream} isMuted={false} className="w-3 h-3 md:w-3.5 md:h-3.5 scale-75 origin-left" />
                 )}
             </div>
         </div>
