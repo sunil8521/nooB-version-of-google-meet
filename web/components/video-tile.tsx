@@ -34,7 +34,6 @@ export function VideoTile({
 
     return (
         <div className="relative w-full h-full min-h-0 rounded-md md:rounded-lg overflow-hidden bg-video-bg">
-            {/* Video element — always mounted */}
             <video
                 ref={videoRef}
                 autoPlay
@@ -47,7 +46,6 @@ export function VideoTile({
                 )}
             />
 
-            {/* Avatar fallback */}
             {!showVideo && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-primary/80 flex items-center justify-center">
@@ -58,7 +56,6 @@ export function VideoTile({
                 </div>
             )}
 
-            {/* Name tag */}
             <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 flex items-center gap-1 md:gap-1.5 bg-black/60 backdrop-blur-sm rounded-md px-1.5 md:px-2 py-0.5">
                 <span className="text-white text-[10px] md:text-xs font-medium truncate max-w-[80px] md:max-w-[120px]">
                     {isLocal ? `${name} (YOU)` : name}

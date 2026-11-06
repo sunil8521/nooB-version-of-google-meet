@@ -45,12 +45,9 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <Header />
-      {/* Main content */}
       <main className="max-w-6xl mx-auto px-4 py-12 md:py-24">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Left side - Text and actions */}
           <div className="space-y-8 animate-fade-in text-center md:text-left flex flex-col items-center md:items-start">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-foreground leading-tight">
@@ -126,16 +123,13 @@ export default function HomePage() {
           
           </div>
 
-          {/* Right side - Illustration */}
           <div className="flex items-center justify-center animate-slide-up mt-8 md:mt-0">
             <div className="relative">
-              {/* Main illustration container */}
               <div className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-full flex items-center justify-center mx-auto">
 
                 <Image src="/videocall.png" alt="Illustration" width={400} height={400} className="w-48 h-48 md:w-full md:h-full object-contain" />
               </div>
 
-              {/* Floating badges */}
               <div className="absolute -top-2 -right-2 bg-card rounded-full px-3 py-1.5 shadow-md flex items-center gap-2 border border-border">
                 <Clock className="w-4 h-4 text-primary" />
                 <span className="text-xs font-medium">HD video</span>
@@ -149,7 +143,6 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-4">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
           <a href="#" className="hover:text-foreground transition-colors">

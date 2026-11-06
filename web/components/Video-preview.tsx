@@ -49,7 +49,6 @@ const VideoPreview = () => {
 
         requestMedia();
     }, []);
-    // Attach stream to video element
     useEffect(() => {
         if (videoRef.current && localStream) {
             videoRef.current.srcObject = localStream;
@@ -90,7 +89,6 @@ const VideoPreview = () => {
                 className="relative w-full rounded-2xl overflow-hidden shadow-lg border border-border"
                 style={{ aspectRatio: "4 / 3", background: localStream && !isVideoOff ? "#202124" : "white" }}
             >
-                {/* Live camera preview */}
                 {localStream && !isVideoOff ? (
                     <video
                         ref={videoRef}
@@ -107,7 +105,6 @@ const VideoPreview = () => {
                     </div>
                 )}
 
-                {/* Mic & Camera controls — bottom left corner */}
                 <div className="absolute bottom-4 left-4 flex gap-2">
                     <button
                         onClick={toggleMic}
@@ -137,7 +134,6 @@ const VideoPreview = () => {
                     </button>
                 </div>
 
-                {/* Mic Visualizer / Camera Badge */}
                 <div className="absolute top-4 left-4 flex items-center gap-2">
                     {isVideoOff && (
                         <span className="text-xs bg-foreground/10 text-muted-foreground px-2.5 py-1 rounded-full">

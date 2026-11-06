@@ -3,14 +3,54 @@ import { toast } from "sonner";
 import { useMeetingStore, ChatMessage, Participant } from "@/store/use-meeting-store";
 import { getSocket } from "./socket";
 
-const ICE_SERVERS: RTCConfiguration = {
+const METERED_API_KEY = "3bba07ed460b32429b7f9a14c5eec50ff904";
+const METERED_API_URL = `https://sunilnb852.metered.live/api/v1/turn/credentials?apiKey=${METERED_API_KEY}`;
+
+// Default STUN-only config (used before TURN credentials are fetched)
+const DEFAULT_ICE_CONFIG: RTCConfiguration = {
     iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        { urls: "stun:stun1.l.google.com:19302" },
+        {
+            urls: [
+                "stun:stun.l.google.com:19302",
+                "stun:stun1.l.google.com:19302",
+            ],
+        },
     ],
 };
 
-const CHUNK_SIZE = 16384; // 16KB
+// Cached ICE configuration with TURN servers
+let cachedIceConfig: RTCConfiguration | null = null;
+let fetchPromise: Promise<RTCConfiguration> | null = null;
+
+async function fetchTurnCredentials(): Promise<RTCConfiguration> {
+    try {
+        const response = await fetch(METERED_API_URL);
+        if (!response.ok) throw new Error(`Metered API error: ${response.status}`);
+        const iceServers = await response.json();
+        cachedIceConfig = {
+            iceServers: [
+                ...DEFAULT_ICE_CONFIG.iceServers!,
+                ...iceServers,
+            ],
+        };
+        console.log("✅ TURN credentials fetched from Metered");
+        return cachedIceConfig;
+    } catch (err) {
+        console.warn("⚠️ Failed to fetch TURN credentials, using STUN only:", err);
+        return DEFAULT_ICE_CONFIG;
+    }
+}
+
+async function getIceConfig(): Promise<RTCConfiguration> {
+    if (cachedIceConfig) return cachedIceConfig;
+    if (!fetchPromise) fetchPromise = fetchTurnCredentials();
+    return fetchPromise;
+}
+
+// Pre-fetch TURN credentials on module load
+fetchPromise = fetchTurnCredentials();
+
+const CHUNK_SIZE = 16384;
 
 class WebRTCManager {
     public peerConnections = new Map<string, RTCPeerConnection>();
@@ -120,13 +160,14 @@ class WebRTCManager {
         };
     }
 
-    private createPeerConnection(peerId: string, socket: Socket, isOfferer: boolean): RTCPeerConnection {
+    private async createPeerConnection(peerId: string, socket: Socket, isOfferer: boolean): Promise<RTCPeerConnection> {
         if (this.peerConnections.has(peerId)) {
             this.peerConnections.get(peerId)!.close();
             this.dataChannels.delete(peerId);
         }
 
-        const pc = new RTCPeerConnection(ICE_SERVERS);
+        const iceConfig = await getIceConfig();
+        const pc = new RTCPeerConnection(iceConfig);
         this.peerConnections.set(peerId, pc);
 
         const store = useMeetingStore.getState();
@@ -177,7 +218,7 @@ class WebRTCManager {
     }
 
     public async createAndSendOffer(peerId: string, socket: Socket) {
-        const pc = this.createPeerConnection(peerId, socket, true);
+        const pc = await this.createPeerConnection(peerId, socket, true);
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
         socket.emit("offer", { to: peerId, offer });
@@ -257,7 +298,7 @@ class WebRTCManager {
         });
 
         socket.on("offer", async ({ from, offer }: { from: string; offer: RTCSessionDescriptionInit }) => {
-            const pc = this.createPeerConnection(from, socket, false);
+            const pc = await this.createPeerConnection(from, socket, false);
             await pc.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
@@ -402,7 +443,7 @@ class WebRTCManager {
             });
 
             screenTrack.onended = () => {
-                this.toggleScreenShare(); // Revert
+                this.toggleScreenShare();
             };
 
             toast.success("Screen sharing started");

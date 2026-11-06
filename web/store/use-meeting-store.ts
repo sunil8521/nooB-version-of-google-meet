@@ -4,7 +4,6 @@ import type { Socket } from "socket.io-client";
 import { webRTCManager } from "@/lib/webrtc-manager";
 import { toast } from "sonner";
 
-/* ── Types ── */
 export interface Participant {
     id: string;
     name: string;
@@ -32,14 +31,12 @@ export interface ChatMessage {
 }
 
 interface MeetingState {
-    /* User */
     userName: string;
     roomId: string;
     isMuted: boolean;
     isVideoOff: boolean;
     localStream: MediaStream | null;
 
-    /* Meeting */
     participants: Record<string, Participant>;
     selfId: string | null;
     messages: ChatMessage[];
@@ -48,14 +45,12 @@ interface MeetingState {
     hasJoined: boolean;
     isConnected: boolean;
 
-    /* Actions — lobby */
     setUserName: (name: string) => void;
     setRoomId: (id: string) => void;
     setIsMuted: (v: boolean) => void;
     setIsVideoOff: (v: boolean) => void;
     setLocalStream: (s: MediaStream | null) => void;
 
-    /* Actions — meeting */
     joinMeeting: () => void;
     leaveMeeting: () => void;
     toggleChat: () => void;
@@ -66,7 +61,6 @@ interface MeetingState {
     cleanupSocketListeners: () => void;
 }
 
-/* ── Helpers ── */
 const getInitials = (name: string) =>
     name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
@@ -76,9 +70,7 @@ const formatFileSize = (bytes: number) => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-// WebRTC logic moved to webRTCManager
 
-/* ── Store ── */
 export const useMeetingStore = create<MeetingState>((set, get) => ({
     userName: "",
     selfId: null,
@@ -93,14 +85,12 @@ export const useMeetingStore = create<MeetingState>((set, get) => ({
     hasJoined: false,
     isConnected: false,
 
-    /* lobby setters */
     setUserName: (name) => set({ userName: name }),
     setRoomId: (id) => set({ roomId: id }),
     setIsMuted: (v) => set({ isMuted: v }),
     setIsVideoOff: (v) => set({ isVideoOff: v }),
     setLocalStream: (s) => set({ localStream: s }),
 
-    /* Join meeting */
     joinMeeting: () => {
         const { userName, isMuted, isVideoOff, localStream, roomId } = get();
         const socket = getSocket();
@@ -126,7 +116,6 @@ export const useMeetingStore = create<MeetingState>((set, get) => ({
         });
     },
 
-    /* Leave meeting */
     leaveMeeting: () => {
         const { localStream, roomId } = get();
         const socket = getSocket();
@@ -149,12 +138,10 @@ export const useMeetingStore = create<MeetingState>((set, get) => ({
 
     toggleChat: () => set((s) => ({ isChatOpen: !s.isChatOpen })),
 
-    /* Screen share — getDisplayMedia + replace video track in all peers */
     toggleScreenShare: async () => {
         await webRTCManager.toggleScreenShare();
     },
 
-    /* Send chat message via socket */
     sendMessage: (text) => {
         const { userName, roomId } = get();
         const socket = getSocket();
@@ -166,17 +153,14 @@ export const useMeetingStore = create<MeetingState>((set, get) => ({
         });
     },
 
-    /* Send file via DataChannel to all peers */
     sendFile: (file: File) => {
         webRTCManager.sendFile(file);
     },
 
-    /* Setup socket event listeners */
     setupSocketListeners: (socket) => {
         webRTCManager.setupSocketListeners(socket);
     },
 
-    /* Cleanup socket listeners */
     cleanupSocketListeners: () => {
         webRTCManager.cleanupSocketListeners();
     },

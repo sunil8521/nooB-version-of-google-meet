@@ -13,8 +13,6 @@ interface MicVisualizerProps {
 export function MicVisualizer({ stream, isMuted, className, variant = "dark-bg" }: MicVisualizerProps) {
     const volume = useMicVolume(stream, !isMuted);
 
-    // If muted, show a static state (e.g., small flat lines)
-    // If not muted, animate 3 bars based on the volume percentage.
 
     const height1 = isMuted ? 4 : Math.max(4, Math.min(12, volume * 0.12));
     const height2 = isMuted ? 4 : Math.max(4, Math.min(16, volume * 0.18));
@@ -22,7 +20,6 @@ export function MicVisualizer({ stream, isMuted, className, variant = "dark-bg" 
 
     const containerColor = variant === "light-bg" ? "bg-black/5" : "bg-white/20";
     
-    // Always use the requested Google Blue color for the bars
     const barColor = "bg-[#1A73E8]";
 
     return (

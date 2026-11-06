@@ -45,7 +45,6 @@ export function ChatPanel({ messages, onSendMessage, onSendFile, isOpen, onClose
 
     return (
         <>
-            {/* Mobile: full-screen overlay */}
             {isOpen && (
                 <div
                     className="fixed inset-0 bg-black/40 z-40 md:hidden"
@@ -56,7 +55,6 @@ export function ChatPanel({ messages, onSendMessage, onSendFile, isOpen, onClose
             <div
                 className={cn(
                     "bg-white border-l border-border flex flex-col transition-all duration-300 overflow-hidden z-50",
-                    // Mobile: slide up from bottom as full overlay
                     "fixed inset-x-0 bottom-0 md:static md:inset-auto",
                     isOpen
                         ? "h-[85dvh] md:h-full md:w-80 rounded-t-2xl md:rounded-none"
@@ -65,12 +63,10 @@ export function ChatPanel({ messages, onSendMessage, onSendFile, isOpen, onClose
             >
                 {isOpen && (
                     <>
-                        {/* Mobile drag handle */}
                         <div className="flex justify-center pt-2 pb-0 md:hidden">
                             <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />
                         </div>
 
-                        {/* Header */}
                         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                             <h3 className="text-sm font-semibold text-foreground">In-call messages</h3>
                             <button
@@ -81,7 +77,6 @@ export function ChatPanel({ messages, onSendMessage, onSendFile, isOpen, onClose
                             </button>
                         </div>
 
-                        {/* Messages */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
                             {messages.length === 0 && (
                                 <div className="flex-1 flex items-center justify-center text-center py-12">
@@ -105,7 +100,6 @@ export function ChatPanel({ messages, onSendMessage, onSendFile, isOpen, onClose
                                         </span>
                                     </div>
 
-                                    {/* File attachment */}
                                     {msg.attachment ? (
                                         <div className="ml-8">
                                             <a
@@ -135,7 +129,6 @@ export function ChatPanel({ messages, onSendMessage, onSendFile, isOpen, onClose
                             <div ref={bottomRef} />
                         </div>
 
-                        {/* Input */}
                         <div className="p-3 border-t border-border pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
                             <div className="flex items-center gap-2">
                                 <input

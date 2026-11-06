@@ -11,7 +11,6 @@ const server = createServer(app)
 const PORT=process.env.PORT??3001
 const CLIENT_URL = process.env.CLIENT_URL!
 
-// Enable CORS for Express API routes (like /api/room/:roomId)
 app.use(cors({
     origin: [CLIENT_URL],
     credentials: true,
@@ -25,7 +24,6 @@ const io = new Server(server, {
     },
 })
 
-/* ── Types ── */
 interface RoomUser {
     socketId: string
     name: string
@@ -34,21 +32,17 @@ interface RoomUser {
     isVideoOff: boolean
 }
 
-// Track users by room
 const rooms = new Map<string, Map<string, RoomUser>>()
 
 
-/* ── Helpers ── */
 const getInitials = (name: string) =>
     name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
 
-/* ── Socket Events ── */
 io.on("connection", (socket) => {
     console.log("✅ user connected:", socket.id)
 
     let currentRoom: string | null = null
 
-    /* ── Join Room ── */
     socket.on("join-room", ({ roomId, userName, isMuted, isVideoOff }: { roomId: string; userName: string, isMuted: boolean, isVideoOff: boolean }) => {
         currentRoom = roomId
         socket.join(roomId)
@@ -61,13 +55,11 @@ io.on("connection", (socket) => {
             isVideoOff: isVideoOff,
         }
 
-        // Add user to room map
         if (!rooms.has(roomId)) {
             rooms.set(roomId, new Map())
         }
         rooms.get(roomId)!.set(socket.id, user)
 
-        // Send existing users to the new joiner
         const existingUsers = Array.from(rooms.get(roomId)!.values()).filter(
             (u) => u.socketId !== socket.id
         )
@@ -77,19 +69,16 @@ io.on("connection", (socket) => {
             socket.emit("room-users", existingUsers)
         }
 
-        // Broadcast new user to others in the room
         socket.to(roomId).emit("user-joined", user)
 
         console.log(`👤 ${userName} joined room ${roomId} (${rooms.get(roomId)!.size} users)`)
     })
 
-    /* ── Leave Room ── */
     socket.on("leave-room", () => {
         if (currentRoom && rooms.has(currentRoom)) {
             rooms.get(currentRoom)!.delete(socket.id)
             socket.to(currentRoom).emit("user-left", { socketId: socket.id })
 
-            // Clean up empty rooms
             if (rooms.get(currentRoom)!.size === 0) {
                 rooms.delete(currentRoom)
             }
@@ -100,7 +89,6 @@ io.on("connection", (socket) => {
         }
     })
 
-    /* ── Chat ── */
     socket.on("send-message", ({ roomId, text, sender, initials }: {
         roomId: string; text: string; sender: string; initials: string
     }) => {
@@ -111,11 +99,9 @@ io.on("connection", (socket) => {
             text,
             timestamp: new Date().toISOString(),
         }
-        // Broadcast to everyone in the room (including sender)
         io.to(roomId).emit("receive-message", message)
     })
 
-    /* ── Media State ── */
     socket.on("toggle-audio", ({ roomId, isMuted }: { roomId: string; isMuted: boolean }) => {
         if (rooms.has(roomId) && rooms.get(roomId)!.has(socket.id)) {
             rooms.get(roomId)!.get(socket.id)!.isMuted = isMuted
@@ -130,7 +116,6 @@ io.on("connection", (socket) => {
         socket.to(roomId).emit("user-toggle-video", { socketId: socket.id, isVideoOff })
     })
 
-    /* ── WebRTC Signaling ── */
     socket.on("offer", ({ to, offer }: { to: string; offer: RTCSessionDescriptionInit }) => {
         socket.to(to).emit("offer", { from: socket.id, offer })
     })
@@ -143,7 +128,6 @@ io.on("connection", (socket) => {
         socket.to(to).emit("ice-candidate", { from: socket.id, candidate })
     })
 
-    /* ── Disconnect ── */
     socket.on("disconnect", () => {
         if (currentRoom && rooms.has(currentRoom)) {
             rooms.get(currentRoom)!.delete(socket.id)

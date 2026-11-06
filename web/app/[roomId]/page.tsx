@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useMeetingStore } from "@/store/use-meeting-store";
 
-// Components
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +15,6 @@ import { getSocket } from "@/lib/socket";
 import { toast } from "sonner";
 import { Copy, Loader2 } from "lucide-react";
 
-/* ── Lobby View ── */
 function LobbyView({ roomId, onJoin }: { roomId: string, onJoin: (name: string) => void }) {
     const nameRef = useRef<HTMLInputElement | null>(null);
 
@@ -76,7 +74,6 @@ function LobbyView({ roomId, onJoin }: { roomId: string, onJoin: (name: string) 
     );
 }
 
-/* ── Active Meeting View ── */
 const MAX_FIT = 12;
 const GAP = 4;
 
@@ -251,7 +248,6 @@ function ActiveMeetingView({ roomId, onLeave }: { roomId: string, onLeave: () =>
     );
 }
 
-/* ── Main Unified Page ── */
 export default function UnifiedMeetingPage() {
     const params = useParams();
     const router = useRouter();
@@ -265,7 +261,6 @@ export default function UnifiedMeetingPage() {
 
     const { setRoomId, setUserName, joinMeeting, hasJoined } = useMeetingStore();
 
-    // Prevent SSR media API crashes and check room existence
     useEffect(() => {
         setMounted(true);
         setRoomId(roomId);
@@ -286,14 +281,13 @@ export default function UnifiedMeetingPage() {
             });
     }, [roomId, setRoomId, isCreating]);
 
-    // Transition to CONNECTED once joined
     useEffect(() => {
         if (roomState === 'JOINING' && hasJoined) {
             setRoomState('CONNECTED');
         }
     }, [roomState, hasJoined]);
 
-    if (!mounted || roomExists === null) return null; // Avoid hydration mismatch and media errors on server
+    if (!mounted || roomExists === null) return null;
 
     if (roomExists === false) {
         return (
